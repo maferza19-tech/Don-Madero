@@ -1,0 +1,64 @@
+/* ============================================================
+   PRODUCTOS — Don Madero
+   Para sumar un mueble nuevo: copiá un objeto de este array,
+   cambiá el "id" (sin espacios, sin tildes), las fotos y los
+   datos. El catálogo, la ficha de producto y el carrito se
+   arman solos a partir de esta lista.
+   ============================================================ */
+const PRODUCTS = [
+  {
+    id: "rack-tv-reciclado",
+    name: "Rack TV Rústico de Madera Reciclada",
+    category: "Racks & Muebles de TV",
+    price: 185000,
+    shortDescription:
+      "Rack bajo con 4 cajones, mueble con puertas y estantes abiertos, hecho a mano en madera reciclada con textura natural y herrajes de hierro envejecido.",
+    description:
+      "Pieza de guardado hecha íntegramente con madera reciclada, respetando las vetas, nudos e imperfecciones naturales que le dan carácter único a cada unidad. Combina 4 cajones amplios, un mueble con puerta de doble hoja y dos estantes abiertos en el centro, ideal como rack de TV o aparador bajo para living o comedor. Terminación natural que resalta la textura envejecida de la madera y herrajes de hierro forjado tipo argolla.",
+    features: [
+      "Madera 100% reciclada, cada pieza es única",
+      "4 cajones + mueble con puertas + 2 estantes abiertos",
+      "Herrajes de hierro forjado tipo argolla",
+      "Terminación natural al aceite, resalta la veta",
+      "Medida aproximada: 1.80 m largo x 0.45 m alto x 0.40 m profundidad",
+      "Hecho a pedido — tiempo de entrega a confirmar por WhatsApp"
+    ],
+    images: [
+      "images/rack-tv-01.jpeg",
+      "images/rack-tv-02.jpeg",
+      "images/rack-tv-03.jpeg"
+    ]
+  },
+  {
+    id: "rack-yvira",
+    name: "Rack YVIRA",
+    category: "Racks & Muebles de TV",
+    price: 1380000,
+    shortDescription:
+      "Rack de TV de gran porte hecho con madera recuperada de lapacho, con 4 cajones, mueble con puerta y estantes abiertos centrales. Terminación natural que resalta la dureza y el color intenso del lapacho.",
+    description:
+      "El Rack YVIRA está hecho con madera recuperada de lapacho, una de las maderas más duras y nobles de la región, reconocida por su color cálido y su resistencia al paso del tiempo. Cada tabla conserva las marcas de su vida anterior — vetas profundas, pequeñas grietas y variaciones de tono — que se respetan en la terminación final en lugar de disimularse. Combina 4 cajones amplios con herrajes de hierro forjado tipo argolla, un mueble lateral con puerta de doble hoja para guardado cerrado, y dos estantes abiertos en el centro pensados para equipos de audio o decoración. Por su ancho, es una pieza pensada para living o comedores amplios, con lugar de sobra para un TV grande y todo lo que va alrededor.",
+    features: [
+      "Madera recuperada de lapacho, cada pieza es única",
+      "4 cajones + mueble con puerta + 2 estantes abiertos",
+      "Herrajes de hierro forjado tipo argolla",
+      "Terminación natural, resalta el color y la dureza del lapacho",
+      "Medidas: 180 cm ancho x 40 cm profundidad x 60 cm alto",
+      "Hecho a pedido — tiempo de entrega a confirmar por WhatsApp"
+    ],
+    images: [
+      "images/yvira-01.jpg",
+      "images/yvira-02.jpg",
+      "images/yvira-03.jpg",
+      "images/yvira-04.jpg"
+    ]
+  }
+];
+
+function formatPrice(value) {
+  return "$" + value.toLocaleString("es-AR");
+}
+
+function getProductById(id) {
+  return PRODUCTS.find((p) => p.id === id);
+}

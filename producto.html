@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Producto — Don Madero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="index.html" class="brand">Don Madero <small>Madera reciclada</small></a>
+    <button class="nav-toggle" aria-label="Abrir menú"><span></span></button>
+    <nav class="main-nav">
+      <a href="index.html">Inicio</a>
+      <a href="catalogo.html" class="active">Catálogo</a>
+      <a href="contacto.html">Contacto</a>
+      <a href="carrito.html" class="cart-link">Carrito <span class="cart-count" data-cart-count>0</span></a>
+    </nav>
+  </div>
+</header>
+
+<section class="page-hero" style="padding-bottom: 0;">
+  <div class="container" id="product-root">
+    <!-- se completa por JS -->
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="brand" style="color:var(--sand);">Don Madero</div>
+      <p style="margin-top:0.8em; max-width:32ch;">Muebles rústicos hechos a mano en madera reciclada. Cada pieza, única.</p>
+    </div>
+    <div>
+      <h4>Navegación</h4>
+      <p><a href="index.html">Inicio</a></p>
+      <p><a href="catalogo.html">Catálogo</a></p>
+      <p><a href="contacto.html">Contacto</a></p>
+    </div>
+    <div>
+      <h4>Contacto</h4>
+      <p><a href="#" data-wa-link>WhatsApp</a></p>
+      <p>Buenos Aires, Argentina</p>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© 2026 Don Madero</span>
+    <span>Hecho a mano, pieza por pieza</span>
+  </div>
+</footer>
+
+<a href="#" class="wa-float" data-wa-link aria-label="Escribinos por WhatsApp">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.71.45 3.38 1.3 4.85L2 22l5.36-1.4a9.9 9.9 0 0 0 4.68 1.19h.01c5.46 0 9.9-4.45 9.9-9.91C21.96 6.45 17.5 2 12.04 2zm0 18.02h-.01a8.2 8.2 0 0 1-4.18-1.14l-.3-.18-3.18.83.85-3.1-.2-.32a8.16 8.16 0 0 1-1.25-4.36c0-4.51 3.68-8.18 8.2-8.18 2.19 0 4.25.85 5.79 2.4a8.13 8.13 0 0 1 2.4 5.79c0 4.51-3.68 8.18-8.19 8.18z"/></svg>
+</a>
+
+<script src="js/products.js"></script>
+<script src="js/cart.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const product = getProductById(params.get("id"));
+  const root = document.getElementById("product-root");
+
+  if (!product) {
+    root.innerHTML = `<div class="empty-cart"><h2>No encontramos ese mueble</h2><p><a href="catalogo.html" class="btn btn-primary">Volver al catálogo</a></p></div>`;
+  } else {
+    document.getElementById("page-title").textContent = product.name + " — Don Madero";
+
+    root.innerHTML = `
+      <div class="product-detail">
+        <div class="gallery">
+          <div class="gallery-main"><img id="gallery-img" src="${product.images[0]}" alt="${product.name}"></div>
+          <div class="gallery-thumbs">
+            ${product.images.map((img, i) => `<button class="${i === 0 ? 'active' : ''}" data-img="${img}"><img src="${img}" alt=""></button>`).join("")}
+          </div>
+        </div>
+        <div class="info">
+          <span class="eyebrow">${product.category}</span>
+          <h1 style="font-size: clamp(1.8rem, 3vw, 2.4rem);">${product.name}</h1>
+          <div class="detail-price">${formatPrice(product.price)}</div>
+          <p style="color:var(--bark);">${product.shortDescription}</p>
+          <ul class="feature-list">
+            ${product.features.map((f) => `<li>${f}</li>`).join("")}
+          </ul>
+          <div class="qty-row">
+            <div class="qty-control">
+              <button type="button" id="qty-minus">–</button>
+              <input type="text" id="qty-input" value="1" inputmode="numeric">
+              <button type="button" id="qty-plus">+</button>
+            </div>
+            <button class="btn btn-primary" id="add-to-cart">Agregar al carrito</button>
+          </div>
+          <a href="#" class="btn btn-whatsapp" data-wa-link data-wa-msg="Hola! Te consulto por: ${product.name}">Consultar por este mueble</a>
+        </div>
+      </div>
+      <section style="padding-top:3em;">
+        <h2 style="font-size:1.4rem;">Descripción</h2>
+        <p style="color:var(--bark); max-width:70ch;">${product.description}</p>
+      </section>
+    `;
+
+    // Gallery
+    document.querySelectorAll(".gallery-thumbs button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.getElementById("gallery-img").src = btn.dataset.img;
+        document.querySelectorAll(".gallery-thumbs button").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+
+    // Qty controls
+    const qtyInput = document.getElementById("qty-input");
+    document.getElementById("qty-minus").addEventListener("click", () => {
+      qtyInput.value = Math.max(1, parseInt(qtyInput.value || "1", 10) - 1);
+    });
+    document.getElementById("qty-plus").addEventListener("click", () => {
+      qtyInput.value = parseInt(qtyInput.value || "1", 10) + 1;
+    });
+
+    document.getElementById("add-to-cart").addEventListener("click", () => {
+      const qty = Math.max(1, parseInt(qtyInput.value || "1", 10));
+      addToCart(product.id, qty);
+      showToast(`Agregaste ${qty} × ${product.name}`);
+    });
+
+    // WhatsApp link with product-specific message
+    document.querySelectorAll("[data-wa-link]").forEach((el) => {
+      if (el.dataset.waMsg) el.href = whatsappGeneralLink(el.dataset.waMsg);
+    });
+  }
+</script>
+</body>
+</html>

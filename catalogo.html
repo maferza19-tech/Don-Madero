@@ -1,0 +1,112 @@
+/* ============================================================
+   CARRITO — Don Madero
+   Carrito simple guardado en el navegador (localStorage).
+   El pedido final se envía como mensaje de WhatsApp: no hay
+   pasarela de pago propia, así que el negocio confirma precio,
+   envío y forma de pago por chat, como suele hacerse en la
+   venta de muebles a medida.
+   ============================================================ */
+const WHATSAPP_NUMBER = "5491128518399";
+const CART_KEY = "donmadero_cart";
+
+function getCart() {
+  try {
+    return JSON.parse(localStorage.getItem(CART_KEY)) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCart(cart) {
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  updateCartBadge();
+}
+
+function addToCart(productId, qty) {
+  const cart = getCart();
+  const existing = cart.find((item) => item.id === productId);
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    cart.push({ id: productId, qty: qty });
+  }
+  saveCart(cart);
+}
+
+function removeFromCart(productId) {
+  saveCart(getCart().filter((item) => item.id !== productId));
+}
+
+function updateQty(productId, qty) {
+  const cart = getCart();
+  const item = cart.find((i) => i.id === productId);
+  if (item) {
+    item.qty = Math.max(1, qty);
+    saveCart(cart);
+  }
+}
+
+function cartCount() {
+  return getCart().reduce((sum, item) => sum + item.qty, 0);
+}
+
+function cartTotal() {
+  return getCart().reduce((sum, item) => {
+    const product = getProductById(item.id);
+    return product ? sum + product.price * item.qty : sum;
+  }, 0);
+}
+
+function updateCartBadge() {
+  document.querySelectorAll("[data-cart-count]").forEach((el) => {
+    el.textContent = cartCount();
+  });
+}
+
+function buildWhatsAppMessage() {
+  const cart = getCart();
+  if (cart.length === 0) return "";
+  let lines = ["Hola! Quiero hacer un pedido en Don Madero:", ""];
+  cart.forEach((item) => {
+    const product = getProductById(item.id);
+    if (!product) return;
+    lines.push(
+      `• ${product.name} x${item.qty} — ${formatPrice(product.price * item.qty)}`
+    );
+  });
+  lines.push("", `Total: ${formatPrice(cartTotal())}`);
+  return encodeURIComponent(lines.join("\n"));
+}
+
+function whatsappCheckoutLink() {
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMessage()}`;
+}
+
+function whatsappGeneralLink(message) {
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message || "Hola! Quería hacer una consulta sobre sus muebles.")}`;
+}
+
+function showToast(message) {
+  let toast = document.querySelector(".toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.className = "toast";
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove("show"), 2200);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  updateCartBadge();
+  document.querySelectorAll("[data-wa-link]").forEach((el) => {
+    el.href = whatsappGeneralLink(el.dataset.waMsg || undefined);
+  });
+  const toggle = document.querySelector(".nav-toggle");
+  const nav = document.querySelector(".main-nav");
+  if (toggle && nav) {
+    toggle.addEventListener("click", () => nav.classList.toggle("open"));
+  }
+});
